@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto QR Generator - Arka Mishra</title>
+    <!-- Importing QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef2f5;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Header Styling */
+        header {
+            background: linear-gradient(135deg, #00bfa5, #008f7a);
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 { margin: 0; font-size: 26px; letter-spacing: 1px; }
+        .subtitle { font-size: 14px; opacity: 0.9; margin-top: 5px; }
+
+        /* Main Container */
+        .app-container {
+            background: white;
+            margin-top: 30px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        /* Desktop/Mobile Mode Classes */
+        .mode-desktop { width: 650px; }
+        .mode-mobile { width: 340px; }
+
+        /* View Selectors */
+        .view-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #f0f0f0;
+            padding: 5px;
+            border-radius: 8px;
+            width: fit-content;
+            margin-left: auto; 
+            margin-right: auto;
+        }
+
+        .view-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #666;
+            transition: 0.2s;
+        }
+        .view-btn.active {
+            background-color: white;
+            color: #00bfa5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Input Section */
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #444; }
+        
+        input[type="text"], input[type="url"], select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: #00bfa5;
+            outline: none;
+        }
+
+        /* Smart Shortcut Dropdown */
+        .shortcut-wrapper {
+            background: #e8f8f5;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px dashed #00bfa5;
+            margin-bottom: 20px;
+        }
+        .shortcut-label {
+            color: #008f7a;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* Buttons */
+        .btn-group { display: flex; gap: 10px; flex-direction: column; }
+        
+        .generate-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .generate-btn:hover { background-color: #000; }
+
+        .batch-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #00bfa5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 191, 165, 0.3);
+        }
+        .batch-btn:hover { background-color: #008f7a; }
+
+        /* QR Output */
+        #qrcode {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            min-height: 200px;
+            align-items: center;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        /* Batch Grid Output */
+        #batchContainer {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            display: none; /* Hidden by default */
+        }
+        .batch-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            background: #fff;
+        }
+        .batch-label {
+            font-size: 10px;
+            margin-top: 5px;
+            word-break: break-all;
+            color: #555;
+        }
+
+        /* Tab Switcher */
+        .tab-buttons { display: flex; gap: 0; margin-bottom: 15px; border-bottom: 2px solid #eee; }
+        .tab-btn {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-weight: bold;
+            color: #888;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+        .tab-btn.active { color: #00bfa5; border-bottom: 2px solid #00bfa5; }
+
+        /* Footer Credit */
+        .credit {
+            margin-top: 30px;
+            color: #aaa;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>QR Code Generator</h1>
+        <div class="subtitle">Inventory & Link Management</div>
+    </header>
+
+    <div id="mainContainer" class="app-container mode-desktop">
+        
+        <!-- View Selection -->
+        <div class="view-selector">
+            <button class="view-btn active" onclick="setMode('desktop')">Desktop View</button>
+            <button class="view-btn" onclick="setMode('mobile')">Mobile View</button>
+        </div>
+
+        <!-- Content Tabs -->
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="setTab('text')">Inventory Codes</button>
+            <button class="tab-btn" onclick="setTab('image')">Image URL</button>
+        </div>
+
+        <!-- TEXT / INVENTORY MODE -->
+        <div id="textInputSection">
+            <!-- Shortcut Dropdown -->
+            <div class="shortcut-wrapper">
+                <span class="shortcut-label">⚡ Future Auto-Select (Shortcuts)</span>
+                <select id="autoSelect" onchange="applyShortcut()">
+                    <option value="">-- Select a Code to Auto-Fill --</option>
+                    <option value="F0-A01+001-01-C">F0-A01+001-01-C</option>
+                    <option value="F0-A02+001-01-C">F0-A02+001-01-C</option>
+                    <option value="F0-A03+001-01-C">F0-A03+001-01-C</option>
+                    <option value="F0-A04+001-01-C">F0-A04+001-01-C</option>
+                    <option value="F0-A05+001-01-C">F0-A05+001-01-C</option>
+                    <option value="F0-A06+001-01-C">F0-A06+001-01-C</option>
+                    <option value="F0-A07+001-01-C">F0-A07+001-01-C</option>
+                    <option value="F0-A08+001-01-C">F0-A08+001-01-C</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Code / Text:</label>
+                <input type="text" id="textData" placeholder="Select above or type manually...">
+            </div>
+
+            <div class="btn-group">
+                <button class="generate-btn" onclick="generateQR()">Generate Single QR</button>
+                <button class="batch-btn" onclick="generateBatch()">🚀 Generate ALL (Batch Mode)</button>
+            </div>
+        </div>
+
+        <!-- IMAGE MODE -->
+        <div id="imageInputSection" style="display:none;">
+            <div class="input-group">
+                <label>Paste Image URL:</label>
+                <input type="url" id="imageData" placeholder="https://example.com/photo.jpg">
+            </div>
+            <button class="generate-btn" onclick="generateQR()">Generate Image QR</button>
+        </div>
+
+        <!-- Single QR Output -->
+        <div id="qrcode"></div>
+        
+        <!-- Batch Output (Hidden by default) -->
+        <div id="batchContainer"></div>
+
+        <!-- Footer -->
+        <p class="credit">System Designed & Developed By Arka Mishra</p>
+    </div>
+
+    <script>
+        let currentTab = 'text';
+
+        // Pre-defined List for Batch Generation
+        const batchCodes = [
+            "F0-A01+001-01-C", "F0-A02+001-01-C", "F0-A03+001-01-C",
+            "F0-A04+001-01-C", "F0-A05+001-01-C", "F0-A06+001-01-C",
+            "F0-A07+001-01-C", "F0-A08+001-01-C"
+        ];
+
+        function setTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if(tab === 'text') {
+                document.getElementById('textInputSection').style.display = 'block';
+                document.getElementById('imageInputSection').style.display = 'none';
+            } else {
+                document.getElementById('textInputSection').style.display = 'none';
+                document.getElementById('imageInputSection').style.display = 'block';
+                // Hide batch if switching to image
+                document.getElementById('batchContainer').style.display = 'none';
+                document.getElementById('qrcode').style.display = 'flex';
+            }
+        }
+
+        function setMode(mode) {
+            const container = document.getElementById('mainContainer');
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            
+            if(mode === 'desktop') {
+                container.classList.remove('mode-mobile');
+                container.classList.add('mode-desktop');
+            } else {
+                container.classList.remove('mode-desktop');
+                container.classList.add('mode-mobile');
+            }
+            event.target.classList.add('active');
+        }
+
+        // Auto-fill Input when Dropdown changes
+        function applyShortcut() {
+            const select = document.getElementById('autoSelect');
+            const input = document.getElementById('textData');
+            if(select.value) {
+                input.value = select.value;
+                // Optional: Auto generate immediately
+                // generateQR(); 
+            }
+        }
+
+        function generateQR() {
+            // Hide batch view, show single view
+            document.getElementById('batchContainer').style.display = 'none';
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.style.display = 'flex';
+            qrContainer.innerHTML = ""; 
+
+            let data = "";
+            if (currentTab === 'text') {
+                data = document.getElementById('textData').value;
+            } else {
+                data = document.getElementById('imageData').value;
+            }
+
+            if (data === "") {
+                alert("Please select a code or enter text!");
+                return;
+            }
+
+            new QRCode(qrContainer, {
+                text: data,
+                width: 180,
+                height: 180,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+
+        // Feature: Generate ALL codes at once
+        function generateBatch() {
+            // Hide single view, show batch view
+            document.getElementById('qrcode').style.display = 'none';
+            const batchContainer = document.getElementById('batchContainer');
+            batchContainer.style.display = 'grid';
+            batchContainer.innerHTML = ""; // Clear old
+
+            batchCodes.forEach(code => {
+                // Create a card for each code
+                const card = document.createElement('div');
+                card.className = 'batch-item';
+                
+                // Create a div for the QR
+                const qrDiv = document.createElement('div');
+                
+                // Generate QR
+                new QRCode(qrDiv, {
+                    text: code,
+                    width: 100,
+                    height: 100,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.L
+                });
+
+                // Add Label
+                const label = document.createElement('div');
+                label.className = 'batch-label';
+                label.innerText = code;
+
+                card.appendChild(qrDiv);
+                card.appendChild(label);
+                batchContainer.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>

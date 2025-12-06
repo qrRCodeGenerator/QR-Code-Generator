@@ -1,10 +1,19 @@
+<?php
+// QR Master Enterprise - Ultimate Version
+// Developed by Arka Mishra
+$appVersion = "3.0 Ultra";
+$currentYear = date("Y");
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Master Enterprise - Arka Mishra</title>
+    <title>QR Master Enterprise | All-in-One</title>
     
+    <!-- FAVICON -->
+    <link rel="icon" type="image/webp" href="https://i.ibb.co/0psYrSjC/tqrcg-logo-asset-1.webp">
+
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -13,9 +22,7 @@
 
     <style>
         :root {
-            /* Light Theme */
-            --primary: #2563eb; /* Professional Blue */
-            --accent: #00bfa5;  /* Green Accent */
+            --primary: #2563eb; 
             --bg-body: #f3f4f6;
             --bg-card: #ffffff;
             --text-main: #111827;
@@ -25,7 +32,6 @@
         }
 
         body.dark-mode {
-            /* Dark Theme */
             --primary: #3b82f6;
             --bg-body: #0f172a;
             --bg-card: #1e293b;
@@ -35,282 +41,226 @@
         }
 
         * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-body); color: var(--text-main); margin: 0; height: 100vh; display: flex; overflow: hidden; }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            overflow: hidden; /* No scroll on body, scroll inside panels */
-            transition: background 0.3s ease;
-        }
-
-        /* --- 1. SIDEBAR (Left) --- */
-        .sidebar {
-            width: var(--sidebar-w);
-            background: var(--bg-card);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            padding: 24px;
-            z-index: 20;
-            transition: 0.3s ease;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 40px;
-            letter-spacing: -0.5px;
-        }
-        .logo i { color: var(--primary); font-size: 24px; }
-
-        .nav-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-sub);
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            margin-bottom: 5px;
-            color: var(--text-sub);
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
+        /* SIDEBAR */
+        .sidebar { width: var(--sidebar-w); background: var(--bg-card); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px; z-index: 20; overflow-y: auto; }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 18px; font-weight: 700; margin-bottom: 30px; }
+        .logo img { height: 32px; width: auto; }
+        
+        .nav-label { font-size: 10px; text-transform: uppercase; color: var(--text-sub); margin: 15px 0 5px 0; font-weight: 700; letter-spacing: 0.5px; }
+        
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; margin-bottom: 4px; color: var(--text-sub); border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: 0.2s; }
         .menu-item:hover { background: var(--bg-body); color: var(--text-main); }
         .menu-item.active { background: rgba(37, 99, 235, 0.1); color: var(--primary); font-weight: 600; }
+        .menu-item i { width: 16px; text-align: center; }
 
-        /* Bottom Actions */
-        .sidebar-footer { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
-
-        .btn-theme, .btn-support {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            text-decoration: none;
-        }
-        
+        .sidebar-footer { margin-top: auto; padding-top: 20px; }
+        .btn-theme, .btn-support { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none; margin-top: 10px; }
         .btn-theme { background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border); }
-        .btn-theme:hover { border-color: var(--text-sub); }
-
         .btn-support { background: #25D366; color: white; border: none; }
-        .btn-support:hover { background: #1ebc59; }
 
-        /* --- 2. MAIN LAYOUT (Right) --- */
-        .main-wrapper {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 1fr 380px; /* Split: Input Area | Preview Area */
-            height: 100vh;
-        }
+        /* MAIN */
+        .main-wrapper { flex: 1; display: grid; grid-template-columns: 1fr 350px; height: 100vh; }
+        .input-panel { padding: 30px; overflow-y: auto; }
+        
+        .header-title { font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+        .header-sub { font-size: 13px; color: var(--text-sub); margin-bottom: 25px; }
 
-        /* --- CENTER: INPUT AREA --- */
-        .input-panel {
-            padding: 40px;
-            overflow-y: auto;
-        }
-
-        .header-title { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
-        .header-sub { font-size: 14px; color: var(--text-sub); margin-bottom: 30px; }
-
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        
         .tab-section { display: none; }
         .tab-section.active { display: block; animation: fadeFast 0.3s ease; }
         @keyframes fadeFast { from {opacity:0; transform:translateY(5px);} to {opacity:1; transform:translateY(0);} }
 
-        /* Form Elements */
-        label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--text-sub); }
-        
-        select, input, textarea {
-            width: 100%;
-            padding: 12px;
-            background: var(--bg-body);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 14px;
-            color: var(--text-main);
-            outline: none;
-            transition: border 0.2s;
-            margin-bottom: 15px;
-        }
-        select:focus, input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 600; color: var(--text-sub); }
+        select, input, textarea { width: 100%; padding: 10px; background: var(--bg-body); border: 1px solid var(--border); border-radius: 6px; font-size: 14px; color: var(--text-main); outline: none; margin-bottom: 15px; }
+        select:focus, input:focus, textarea:focus { border-color: var(--primary); }
 
-        .badge-auto { background: #e0e7ff; color: #3730a3; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; display: inline-block; margin-bottom: 15px; }
-
-        /* --- RIGHT: PREVIEW AREA --- */
-        .preview-sidebar {
-            background: var(--bg-card);
-            border-left: 1px solid var(--border);
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .qr-frame {
-            background: white; /* Always white for scanability */
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border: 1px solid #e5e7eb;
-            text-align: center;
-            width: 100%;
-            max-width: 280px;
-        }
-
+        /* PREVIEW */
+        .preview-sidebar { background: var(--bg-card); border-left: 1px solid var(--border); padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .qr-frame { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; text-align: center; width: 100%; max-width: 250px; }
         #qrcode img { display: block; margin: 0 auto; }
-        .qr-label { margin-top: 15px; font-size: 14px; font-weight: 700; color: #111; word-break: break-all; }
+        .qr-label { margin-top: 15px; font-size: 13px; font-weight: 700; color: #111; word-break: break-all; }
+        .btn-download { margin-top: 25px; width: 100%; max-width: 250px; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .watermark { margin-top: auto; font-size: 11px; color: var(--text-sub); text-align: center; opacity: 0.7; }
 
-        .btn-download {
-            margin-top: 30px;
-            width: 100%;
-            max-width: 280px;
-            padding: 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: 0.2s;
-        }
-        .btn-download:hover { opacity: 0.9; transform: translateY(-1px); }
-
-        .watermark { margin-top: auto; font-size: 12px; color: var(--text-sub); text-align: center; opacity: 0.7; }
-
-        /* --- MOBILE RESPONSIVE --- */
+        /* RESPONSIVE */
         @media (max-width: 1024px) {
             body { flex-direction: column; overflow: auto; }
-            .sidebar { width: 100%; flex-direction: row; align-items: center; padding: 15px; border-right: none; border-bottom: 1px solid var(--border); }
-            .sidebar-footer { display: none; } /* Hide footer on mobile nav */
-            .nav-label { display: none; }
-            .logo { margin-bottom: 0; }
-            .menu-item span { display: none; } /* Icon only */
-            
+            .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; padding: 10px; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+            .sidebar-footer, .nav-label { display: none; }
             .main-wrapper { display: flex; flex-direction: column; height: auto; }
-            .input-panel { padding: 20px; }
             .preview-sidebar { border-left: none; border-top: 1px solid var(--border); padding: 40px 20px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 1. LEFT SIDEBAR -->
+    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="logo">
-            <i class="fa-solid fa-qrcode"></i>
+            <img src="https://i.ibb.co/0psYrSjC/tqrcg-logo-asset-1.webp" alt="Logo">
             <span>QR Master</span>
         </div>
 
-        <div class="nav-label">Main Tools</div>
+        <div class="nav-label">Business Tools</div>
         <div class="menu-item active" onclick="switchTab('inventory', this)">
-            <i class="fa-solid fa-warehouse"></i> <span>Inventory</span>
+            <i class="fa-solid fa-warehouse"></i> Inventory
         </div>
         <div class="menu-item" onclick="switchTab('url', this)">
-            <i class="fa-solid fa-globe"></i> <span>Website URL</span>
+            <i class="fa-solid fa-globe"></i> Website URL
+        </div>
+        <div class="menu-item" onclick="switchTab('vcard', this)">
+            <i class="fa-solid fa-address-card"></i> vCard Contact
+        </div>
+        <div class="menu-item" onclick="switchTab('wifi', this)">
+            <i class="fa-solid fa-wifi"></i> Wi-Fi Config
+        </div>
+
+        <div class="nav-label">Communication</div>
+        <div class="menu-item" onclick="switchTab('whatsapp', this)">
+            <i class="fa-brands fa-whatsapp"></i> WhatsApp
+        </div>
+        <div class="menu-item" onclick="switchTab('email', this)">
+            <i class="fa-solid fa-envelope"></i> Send Email
+        </div>
+        <div class="menu-item" onclick="switchTab('sms', this)">
+            <i class="fa-solid fa-comment-sms"></i> SMS Message
+        </div>
+        <div class="menu-item" onclick="switchTab('phone', this)">
+            <i class="fa-solid fa-phone"></i> Phone Call
         </div>
         <div class="menu-item" onclick="switchTab('text', this)">
-            <i class="fa-solid fa-paragraph"></i> <span>Text / Code</span>
+            <i class="fa-solid fa-paragraph"></i> Plain Text
         </div>
 
         <div class="sidebar-footer">
             <div class="btn-theme" onclick="toggleTheme()">
-                <i class="fa-solid fa-moon"></i> Dark / Light
+                <i class="fa-solid fa-moon"></i> Theme
             </div>
             <a href="https://wa.me/919641359307" target="_blank" class="btn-support">
-                <i class="fa-brands fa-whatsapp"></i> Support
+                <i class="fa-brands fa-whatsapp"></i> Help
             </a>
-            <div style="font-size:11px; text-align:center; color:var(--text-sub); margin-top:5px;">
-                v2.5 Pro &bull; By Arka Mishra
+            <div style="font-size:10px; text-align:center; color:var(--text-sub); margin-top:5px;">
+                By Arka Mishra
             </div>
         </div>
     </aside>
 
-    <!-- 2. MAIN CONTENT -->
+    <!-- MAIN CONTENT -->
     <main class="main-wrapper">
-        
-        <!-- CENTER: CONFIGURATION -->
         <div class="input-panel">
             
-            <!-- INVENTORY SECTION -->
+            <!-- 1. INVENTORY -->
             <div id="tab-inventory" class="tab-section active">
                 <div class="header-title">Inventory Management</div>
-                <div class="header-sub">Generate tracking codes for shelves and items automatically.</div>
-
+                <div class="header-sub">Generate tracking codes for shelves.</div>
                 <div class="card">
-                    <div class="badge-auto">AUTO-GENERATOR</div>
-                    <label>1. Select Shelf Category</label>
+                    <label>Shelf</label>
                     <select id="shelfSelect" onchange="loadInventoryItems()">
                         <option value="">-- Select Shelf --</option>
                     </select>
-
-                    <label>2. Select Item ID</label>
+                    <label>Item</label>
                     <select id="itemSelect" onchange="applyInventoryCode()">
                         <option value="">-- Select Shelf First --</option>
                     </select>
-                </div>
-
-                <div class="card">
-                    <label style="color:var(--primary);">✏️ Manual Override (Edit Code)</label>
-                    <input type="text" id="manualCodeInput" placeholder="F0-XX-000..." oninput="manualUpdate()">
-                    <small style="color:var(--text-sub);">Edits reflect immediately in the preview.</small>
+                    <label style="color:var(--primary); margin-top:10px;">Manual Edit</label>
+                    <input type="text" id="manualCodeInput" oninput="manualUpdate()">
                 </div>
             </div>
 
-            <!-- URL SECTION -->
+            <!-- 2. URL -->
             <div id="tab-url" class="tab-section">
                 <div class="header-title">Website URL</div>
-                <div class="header-sub">Create QR codes for web links.</div>
                 <div class="card">
-                    <label>Website Address (HTTPS)</label>
-                    <input type="url" id="linkInput" placeholder="https://www.google.com" oninput="generateGeneric('linkInput')">
+                    <label>URL (HTTPS)</label>
+                    <input type="url" id="inp_url" placeholder="https://example.com" oninput="genURL()">
                 </div>
             </div>
 
-            <!-- TEXT SECTION -->
+            <!-- 3. vCard -->
+            <div id="tab-vcard" class="tab-section">
+                <div class="header-title">vCard (Contact)</div>
+                <div class="card">
+                    <label>Full Name</label>
+                    <input type="text" id="vc_name" oninput="genVCard()">
+                    <label>Phone Number</label>
+                    <input type="text" id="vc_phone" oninput="genVCard()">
+                    <label>Email</label>
+                    <input type="email" id="vc_email" oninput="genVCard()">
+                    <label>Company / Org</label>
+                    <input type="text" id="vc_org" oninput="genVCard()">
+                </div>
+            </div>
+
+            <!-- 4. WIFI -->
+            <div id="tab-wifi" class="tab-section">
+                <div class="header-title">Wi-Fi Network</div>
+                <div class="card">
+                    <label>Network Name (SSID)</label>
+                    <input type="text" id="wf_ssid" oninput="genWifi()">
+                    <label>Password</label>
+                    <input type="text" id="wf_pass" oninput="genWifi()">
+                    <label>Encryption</label>
+                    <select id="wf_type" onchange="genWifi()">
+                        <option value="WPA">WPA/WPA2</option>
+                        <option value="WEP">WEP</option>
+                        <option value="nopass">No Password</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 5. WHATSAPP -->
+            <div id="tab-whatsapp" class="tab-section">
+                <div class="header-title">WhatsApp Chat</div>
+                <div class="card">
+                    <label>Phone Number (with Country Code, ex: 91964...)</label>
+                    <input type="number" id="wa_phone" oninput="genWhatsapp()">
+                    <label>Message</label>
+                    <input type="text" id="wa_text" oninput="genWhatsapp()">
+                </div>
+            </div>
+
+            <!-- 6. EMAIL -->
+            <div id="tab-email" class="tab-section">
+                <div class="header-title">Send Email</div>
+                <div class="card">
+                    <label>To (Email Address)</label>
+                    <input type="email" id="em_to" oninput="genEmail()">
+                    <label>Subject</label>
+                    <input type="text" id="em_sub" oninput="genEmail()">
+                    <label>Body</label>
+                    <textarea id="em_body" oninput="genEmail()"></textarea>
+                </div>
+            </div>
+
+            <!-- 7. SMS -->
+            <div id="tab-sms" class="tab-section">
+                <div class="header-title">SMS Message</div>
+                <div class="card">
+                    <label>Phone Number</label>
+                    <input type="number" id="sms_phone" oninput="genSMS()">
+                    <label>Message</label>
+                    <input type="text" id="sms_msg" oninput="genSMS()">
+                </div>
+            </div>
+
+            <!-- 8. PHONE -->
+            <div id="tab-phone" class="tab-section">
+                <div class="header-title">Phone Call</div>
+                <div class="card">
+                    <label>Phone Number</label>
+                    <input type="tel" id="ph_num" oninput="genPhone()">
+                </div>
+            </div>
+
+            <!-- 9. TEXT -->
             <div id="tab-text" class="tab-section">
                 <div class="header-title">Plain Text</div>
-                <div class="header-sub">Simple text messages or ID codes.</div>
                 <div class="card">
                     <label>Content</label>
-                    <textarea id="textInput" rows="5" placeholder="Type content here..." oninput="generateGeneric('textInput')"></textarea>
+                    <textarea id="inp_text" rows="4" oninput="genText()"></textarea>
                 </div>
             </div>
 
@@ -324,36 +274,31 @@
                     </div>
                     <div style="flex:2;">
                         <label>Label Text</label>
-                        <input type="text" id="finalLabel" placeholder="Auto-fills from code..." oninput="updateLabel()">
+                        <input type="text" id="finalLabel" placeholder="Auto-fills..." oninput="updateLabel()">
                     </div>
                 </div>
             </div>
 
         </div>
 
-        <!-- RIGHT: PREVIEW SIDEBAR -->
+        <!-- PREVIEW -->
         <div class="preview-sidebar">
             <div style="font-size:12px; font-weight:700; color:var(--text-sub); margin-bottom:20px; text-transform:uppercase;">Live Preview</div>
-            
             <div id="capture-area" class="qr-frame">
                 <div id="qrcode"></div>
                 <div id="qr-text-label" class="qr-label"></div>
             </div>
-
             <button class="btn-download" onclick="saveImage()">
-                <i class="fa-solid fa-download"></i> Save High Quality
+                <i class="fa-solid fa-download"></i> Save HD Image
             </button>
-
             <div class="watermark">
-                Secure QR System<br>
-                <strong>Designed by Arka Mishra</strong>
+                <strong>Designed by Arka Mishra</strong><br>© <?php echo $currentYear; ?>
             </div>
         </div>
-
     </main>
 
     <script>
-        // --- DATA CONFIGURATION ---
+        // --- INVENTORY DATA ---
         const shelfConfig = [
             { id: "A01", count: 19 }, { id: "A02", count: 21 },
             { id: "A03", count: 25 }, { id: "A04", count: 7 },
@@ -362,30 +307,24 @@
             { id: "FV01", count: 9 }, { id: "CR01", count: 15 },
             { id: "FR01", count: 15 }
         ];
-
         let inventoryData = {};
         let currentQRText = "Welcome";
 
         // --- INIT ---
         window.onload = function() {
             const shelfSelect = document.getElementById('shelfSelect');
-            
             shelfConfig.forEach(shelf => {
                 let items = [];
                 for(let i=1; i<=shelf.count; i++) {
                     let num = i.toString().padStart(3, '0');
                     items.push(`F0-${shelf.id}-${num}-01-A`);
                 }
-                
-                let groupName = `Shelf ${shelf.id}`;
-                inventoryData[groupName] = items;
-                
+                let gName = `Shelf ${shelf.id}`;
+                inventoryData[gName] = items;
                 let opt = document.createElement('option');
-                opt.value = groupName;
-                opt.text = groupName;
+                opt.value = gName; opt.text = gName;
                 shelfSelect.appendChild(opt);
             });
-
             makeQR("Welcome");
         };
 
@@ -393,51 +332,87 @@
         function switchTab(type, btn) {
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
             if(btn) btn.classList.add('active');
-            
             document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
             document.getElementById('tab-' + type).classList.add('active');
         }
 
-        // --- LOGIC ---
+        // --- GENERATORS ---
+        // 1. Inventory
         function loadInventoryItems() {
-            const group = document.getElementById('shelfSelect').value;
-            const itemSelect = document.getElementById('itemSelect');
-            itemSelect.innerHTML = '<option value="">-- Select Item --</option>';
-            
-            if(group && inventoryData[group]) {
-                inventoryData[group].forEach(code => {
-                    let opt = document.createElement('option');
-                    opt.value = code;
-                    opt.text = code;
-                    itemSelect.appendChild(opt);
+            const g = document.getElementById('shelfSelect').value;
+            const s = document.getElementById('itemSelect');
+            s.innerHTML = '<option value="">-- Select Item --</option>';
+            if(g && inventoryData[g]) {
+                inventoryData[g].forEach(c => {
+                    let o = document.createElement('option'); o.value = c; o.text = c; s.appendChild(o);
                 });
             }
         }
-
         function applyInventoryCode() {
-            const code = document.getElementById('itemSelect').value;
-            if(code) {
-                document.getElementById('manualCodeInput').value = code;
-                document.getElementById('finalLabel').value = code;
-                updateLabel();
-                makeQR(code);
+            const c = document.getElementById('itemSelect').value;
+            if(c) {
+                document.getElementById('manualCodeInput').value = c;
+                document.getElementById('finalLabel').value = c;
+                updateLabel(); makeQR(c);
             }
         }
-
         function manualUpdate() {
-            const text = document.getElementById('manualCodeInput').value;
-            document.getElementById('finalLabel').value = text;
-            updateLabel();
-            makeQR(text);
+            const t = document.getElementById('manualCodeInput').value;
+            document.getElementById('finalLabel').value = t; updateLabel(); makeQR(t);
         }
 
-        function generateGeneric(id) {
-            makeQR(document.getElementById(id).value);
+        // 2. URL
+        function genURL() { makeQR(document.getElementById('inp_url').value); }
+
+        // 3. vCard
+        function genVCard() {
+            const n = document.getElementById('vc_name').value;
+            const p = document.getElementById('vc_phone').value;
+            const e = document.getElementById('vc_email').value;
+            const o = document.getElementById('vc_org').value;
+            const vcard = `BEGIN:VCARD\nVERSION:3.0\nN:${n}\nFN:${n}\nORG:${o}\nTEL;TYPE=CELL:${p}\nEMAIL:${e}\nEND:VCARD`;
+            makeQR(vcard);
         }
 
-        function updateLabel() {
-            document.getElementById('qr-text-label').innerText = document.getElementById('finalLabel').value;
+        // 4. WiFi
+        function genWifi() {
+            const s = document.getElementById('wf_ssid').value;
+            const p = document.getElementById('wf_pass').value;
+            const t = document.getElementById('wf_type').value;
+            makeQR(`WIFI:S:${s};T:${t};P:${p};;`);
         }
+
+        // 5. WhatsApp
+        function genWhatsapp() {
+            const p = document.getElementById('wa_phone').value;
+            const t = document.getElementById('wa_text').value;
+            makeQR(`https://wa.me/${p}?text=${encodeURIComponent(t)}`);
+        }
+
+        // 6. Email
+        function genEmail() {
+            const t = document.getElementById('em_to').value;
+            const s = document.getElementById('em_sub').value;
+            const b = document.getElementById('em_body').value;
+            makeQR(`mailto:${t}?subject=${s}&body=${b}`);
+        }
+
+        // 7. SMS
+        function genSMS() {
+            const p = document.getElementById('sms_phone').value;
+            const m = document.getElementById('sms_msg').value;
+            makeQR(`smsto:${p}:${m}`);
+        }
+
+        // 8. Phone
+        function genPhone() { makeQR(`tel:${document.getElementById('ph_num').value}`); }
+
+        // 9. Text
+        function genText() { makeQR(document.getElementById('inp_text').value); }
+
+
+        // --- CORE FUNCTIONS ---
+        function updateLabel() { document.getElementById('qr-text-label').innerText = document.getElementById('finalLabel').value; }
 
         function makeQR(text) {
             if(!text) return;
@@ -445,34 +420,21 @@
             const color = document.getElementById('qrColor').value;
             const container = document.getElementById('qrcode');
             container.innerHTML = "";
-
             new QRCode(container, {
-                text: text,
-                width: 200,
-                height: 200,
-                colorDark : color,
-                colorLight : "#ffffff",
+                text: text, width: 200, height: 200,
+                colorDark : color, colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.H
             });
         }
 
         function refreshQR() { makeQR(currentQRText); }
+        function toggleTheme() { document.body.classList.toggle('dark-mode'); }
 
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-        }
-
-        // --- HIGH QUALITY SAVE ---
         function saveImage() {
             const captureArea = document.getElementById('capture-area');
-            
-            // Scale up for high quality
-            html2canvas(captureArea, {
-                scale: 3, // 3x resolution
-                backgroundColor: "#ffffff"
-            }).then(canvas => {
+            html2canvas(captureArea, { scale: 3, backgroundColor: "#ffffff" }).then(canvas => {
                 let link = document.createElement('a');
-                link.download = 'QR_Master_HD.jpg';
+                link.download = 'QR_Master_Enterprise.jpg';
                 link.href = canvas.toDataURL('image/jpeg', 1.0);
                 link.click();
             });

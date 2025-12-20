@@ -1,0 +1,7 @@
+{
+  "name": "BlinkFast - Quick Commerce",
+  "description": "A high-performance grocery and essentials delivery app inspired by Blinkit, featuring AI-powered smart shopping and 10-minute delivery simulation.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
